@@ -4,19 +4,19 @@ function zip(arrays) {
   });
 }
 
-
 $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
-    if (!$(this).next().hasClass('show')) {
+    if (!$(this).next().hasClass('show')) { // idk
       $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
     }
+
+    // When you click a drop down, it opens up it's associated menu.
     var $subMenu = $(this).next(".dropdown-menu");
     $subMenu.toggleClass('show');
   
-  
+    // But only show the next menu, not all menus after it.
     $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
       $('.dropdown-submenu .show').removeClass("show");
     });
-  
   
     return false;
 });
@@ -56,8 +56,11 @@ $(".graph-toggle").on('click',function(ev){
 
   // populate select
   $("#graphselect").empty();
+  
   //console.log(Object.keys(sim_payload));
+
   if (fishery_stats.indexOf(stlat) >= 0) {
+    // This sets up the in-graph drop down menu.
     sim_payload["fisheries"].forEach(function (f) {
       $("#graphselect").append("<option data-id=\"" + f["name"] + "\">"+f["name"]+"</option>");
     });
@@ -75,6 +78,7 @@ $(".graph-toggle").on('click',function(ev){
   $("#graphmodal").modal({backdrop:false,focus:false});
  // console.log($(ev.target).text());
   console.log("h-hewwo?");
+
   ev.stopPropagation();
   ev.stopImmediatePropagation();
 });
@@ -93,6 +97,8 @@ function key_stats(s,key,chart) {
     chart.y.push(res[s][key][k]);
   });
 }
+
+var chartDraw;
 
 function render_stlat(stlat,key) {
   var chart = {
@@ -168,9 +174,14 @@ function render_stlat(stlat,key) {
   var canvas = document.getElementById('salmon_graph');
   var ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var chart = new Chart(ctx, chart_opts);
-}
 
+  if(chartDraw)
+  {
+    chartDraw.destroy();
+  }
+
+  chartDraw = new Chart(ctx, chart_opts);
+}
 
 var element = document.querySelector('#map')
 panzoom(element, {
