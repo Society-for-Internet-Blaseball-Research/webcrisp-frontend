@@ -1,3 +1,33 @@
+window.onload = function () {
+  var ImageMap = function (map, img) {
+          var n,
+              areas = map.getElementsByTagName('area'),
+              len = areas.length,
+              coords = [],
+              previousWidth = 460.8;
+          for (n = 0; n < len; n++) {
+              coords[n] = areas[n].coords.split(',');
+          }
+          this.resize = function () {
+              var n, m, clen,
+                  x = img.offsetWidth / previousWidth;
+              for (n = 0; n < len; n++) {
+                  clen = coords[n].length;
+                  for (m = 0; m < clen; m++) {
+                      coords[n][m] *= x;
+                  }
+                  areas[n].coords = coords[n].join(',');
+              }
+              previousWidth = document.getElementById('map').offsetWidth;
+              return true;
+          };
+          window.onresize = this.resize;
+      },
+  imageMap = new ImageMap(document.getElementById('marker-map'), document.getElementById('map'));
+  imageMap.resize();
+  return;
+}
+
 function zip(arrays) {
   return arrays[0].map(function(_,i){
       return arrays.map(function(array){return array[i]})
@@ -183,8 +213,28 @@ function render_stlat(stlat,key) {
   chartDraw = new Chart(ctx, chart_opts);
 }
 
-var element = document.querySelector('#map')
+var element = document.querySelector('#map-container')
 panzoom(element, {
+  beforeWheel: function(e) {
+    // allow wheel-zoom only if shift key is down. Otherwise - ignore
+    var shouldIgnore = !e.shiftKey;
+    return shouldIgnore;
+  },
   bounds: true,
   boundsPadding: 0.6
 });
+
+mapAreas = document.getElementById('marker-map').getElementsByTagName('area');
+
+console.log(mapAreas);
+let i;
+
+for (i = 0; i < mapAreas.length; i++) {
+  let marker = mapAreas[i];
+  marker.addEventListener("mouseover", function(){
+    alert(marker.id);
+  });
+}
+
+
+

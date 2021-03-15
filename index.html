@@ -91,15 +91,20 @@
               </ul>
             </div>
         </nav>
-        <div class="container-fluid">
-          <img src="./assets/map.svg" width="100%" height="100%" id="map"></img>
+        <div class="container-fluid" id="map-container">
+            <img src="./assets/map.svg" id="map" class="map" usemap="#markers"/>
+            <map name="markers" id="marker-map">
+              <area shape="circle" coords="178, 153, 5" alt="Hellmouth Sunbeams" href="#" id="sun">
+              <area shape="circle" coords="130, 175, 5" alt="Unlimited Tacos" href="#" id="tacos">
+              <area shape="circle" coords="115, 145, 5" alt="San Fran Lovers" href="#" id="love">
+            </map>
         </div>
         <!-- Modal -->
         <div class="modal fade" id="graphmodal" tabindex="-1" role="dialog" aria-labelledby="graphmlabel">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <div class="modal-title" >
+                <div class="modal-title">
                   <h4 id="graphmlabel">Abundances for </h4>
                   <form class="form-inline">
                     <select class="custom-select my-1 mr-sm-2" id="graphselect">
