@@ -1,4 +1,5 @@
 window.onload = function () {
+  // Scales the image map with the map.svg file
   var ImageMap = function (map, img) {
           var n,
               areas = map.getElementsByTagName('area'),
@@ -225,16 +226,28 @@ panzoom(element, {
 });
 
 mapAreas = document.getElementById('marker-map').getElementsByTagName('area');
-
-console.log(mapAreas);
 let i;
 
 for (i = 0; i < mapAreas.length; i++) {
   let marker = mapAreas[i];
-  marker.addEventListener("mouseover", function(){
-    alert(marker.id);
+  marker.addEventListener("mouseover", function(hoverEvent){
+    let label = $('<div id="team-label">')
+    .css({
+      "left": hoverEvent.pageX + "px",
+      "top":  hoverEvent.pageY + "px"
+    })
+    .append(document.createTextNode(marker.alt))
+    .appendTo(document.body);
+
+    label = document.getElementById('team-label');
+    
+    label.addEventListener("mouseleave", function(){
+      $("#team-label").remove();
+    });
   });
 }
+
+
 
 
 
