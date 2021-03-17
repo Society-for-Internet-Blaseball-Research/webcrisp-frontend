@@ -1,29 +1,29 @@
 window.onload = function () {
   // Scales the image map with the map.svg file
   var ImageMap = function (map, img) {
-          var n,
-              areas = map.getElementsByTagName('area'),
-              len = areas.length,
-              coords = [],
-              previousWidth = 460.8;
-          for (n = 0; n < len; n++) {
-              coords[n] = areas[n].coords.split(',');
-          }
-          this.resize = function () {
-              var n, m, clen,
-                  x = img.offsetWidth / previousWidth;
-              for (n = 0; n < len; n++) {
-                  clen = coords[n].length;
-                  for (m = 0; m < clen; m++) {
-                      coords[n][m] *= x;
-                  }
-                  areas[n].coords = coords[n].join(',');
-              }
-              previousWidth = document.getElementById('map').offsetWidth;
-              return true;
-          };
-          window.onresize = this.resize;
-      },
+    var n,
+      areas = $('area'),
+      len = areas.length,
+      coords = [],
+      previousWidth = 460.8;
+    for (n = 0; n < len; n++) {
+      coords[n] = areas[n].coords.split(',');
+    }
+    this.resize = function () {
+      var n, m, clen,
+        x = img.offsetWidth / previousWidth;
+      for (n = 0; n < len; n++) {
+        clen = coords[n].length;
+        for (m = 0; m < clen; m++) {
+          coords[n][m] *= x;
+        }
+        areas[n].coords = coords[n].join(',');
+      }
+      previousWidth = $('#map').width();
+      return true;
+      };
+      window.onresize = this.resize;
+    },
   imageMap = new ImageMap(document.getElementById('marker-map'), document.getElementById('map'));
   imageMap.resize();
   return;
@@ -246,66 +246,49 @@ panzoom(element, {
 });
 
 // Add labels to the image map areas. 
-mapAreas = document.getElementById('marker-map').getElementsByTagName('area');
-let i;
+$("area").on("mouseenter", function(hoverEvent){
+  let label = $('<div id="team-label">')
+  .css({
+    "left": hoverEvent.pageX + "px",
+    "top":  hoverEvent.pageY + "px"
+  })
+  .append(document.createTextNode(this.alt))
+  .appendTo(document.body);
 
-for (i = 0; i < mapAreas.length; i++) {
-  let marker = mapAreas[i];
-  marker.addEventListener("mouseover", function(hoverEvent){
-    let label = $('<div id="team-label">')
-    .css({
-      "left": hoverEvent.pageX + "px",
-      "top":  hoverEvent.pageY + "px"
-    })
-    .append(document.createTextNode(marker.alt))
-    .appendTo(document.body);
-
-    // Remove the labels when the mouse moves
-    label = document.getElementById('team-label');
-    label.addEventListener("mouseleave", function(){
-      $("#team-label").remove();
-    });
-    
-    // Gives team info if the label's clicked.
-    let team_id = team_ids[marker.id];
-    label.addEventListener("click", function(){
-      fetch('https://cors-proxy.blaseball-reference.com/database/team?id=' + team_id)
-      //.then(response => console.log(response))
+  // Remove the labels when the mouse moves
+  label = document.getElementById('team-label');
+  $("#team-label").mouseleave(function(){
+    $("#team-label").remove();
+  });
+  
+  // Gives team info if the label's clicked.
+  let team_id = team_ids[this.id];
+  $("#team-label").click(function(){
+    fetch('https://cors-proxy.blaseball-reference.com/database/team?id=' + team_id)
+    .then(response => response.json())
+    .then(json => {
+      let all_players = "";
+      for(let j = 0; j < json["lineup"].length; j++){
+        all_players += json["lineup"][j] + ',';
+      }
+      for(let j = 0; j < json["rotation"].length; j++){
+        all_players += json["rotation"][j] + ',';
+      }
+      let player_text = "<div class='player-list-header'>" + json["fullName"] + " Player Roster:</div><ul>" ;
+      
+      fetch('https://cors-proxy.blaseball-reference.com/database/players?ids=' + all_players)
       .then(response => response.json())
       .then(json => {
-        let all_players = "";
-        for(let j = 0; j < json["lineup"].length; j++){
-          all_players += json["lineup"][j] + ',';
+        for(let k = 0; k < json.length; k++){
+          player_text += '<li>' + json[k]["name"] + '</li>';
         }
-        for(let j = 0; j < json["rotation"].length; j++){
-          all_players += json["rotation"][j] + ',';
-        }
-        let player_text = "<div class='player-list-header'>" + json["fullName"] + " Player Roster:</div><ul>" ;
-        
-        fetch('https://cors-proxy.blaseball-reference.com/database/players?ids=' + all_players)
-        .then(response => response.json())
-        .then(json => {
-          for(let k = 0; k < json.length; k++){
-            player_text += '<li>' + json[k]["name"] + '</li>';
-          }
-          let player_list = $('<div id="player-label">')
-            .append(player_text)
-            .appendTo(document.body);
-            label = document.getElementById('player-label');
-            label.addEventListener("click", function(){
-              $("#player-label").remove();
-            })
-        })
+        let player_list = $('<div id="player-label">')
+          .append(player_text)
+          .appendTo(document.body);
+          $("#player-label").click(function(){
+            $("#player-label").remove();
+          })
       })
-    });
+    })
   });
-}
-
-
-
-
-
-
-
-
-
+});
