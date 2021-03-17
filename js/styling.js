@@ -273,24 +273,30 @@ for (i = 0; i < mapAreas.length; i++) {
       //.then(response => console.log(response))
       .then(response => response.json())
       .then(json => {
-        let player_text = json["fullName"] + " Player Lineup:<br>" ;
+        let all_players = "";
+        let player_text = json["fullName"] + " Player Roster:<br>" ;
         for(let j = 0; j < json["lineup"].length; j++){
-          player_text += json["lineup"][j] + "<br>";
+          all_players += json["lineup"][j] + ',';
+        }
+        for(let j = 0; j < json["rotation"].length; j++){
+          all_players += json["rotation"][j] + ',';
         }
 
-        let player_list = $('<div id="player-label">')
-          .append(player_text)
-          .appendTo(document.body);
-
-          $("#player-label").draggable();
-
-          label = document.getElementById('player-label');
-          label.addEventListener("click", function(){
-            $("#player-label").remove();
+        fetch('https://cors-proxy.blaseball-reference.com/database/players?ids=' + all_players)
+        .then(response => response.json())
+        .then(json => {
+          for(let k = 0; k < json.length; k++){
+            player_text += json[k]["name"] + '<br>';
+          }
+          let player_list = $('<div id="player-label">')
+            .append(player_text)
+            .appendTo(document.body);
+            label = document.getElementById('player-label');
+            label.addEventListener("click", function(){
+              $("#player-label").remove();
+            })
+        })
       })
-    })
-
-
     });
   });
 }
