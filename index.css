@@ -33,3 +33,12 @@
     font-weight: bold;
     border: 0.25em solid black;
 }
+
+#player-label{
+    padding: 0.25em;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    font-weight: bold;
+    border: 0.25em solid black;
+}
