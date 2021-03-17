@@ -279,12 +279,10 @@ for (i = 0; i < mapAreas.length; i++) {
         }
 
         let player_list = $('<div id="player-label">')
-          .css({
-            "left": hoverEvent.pageX + "px",
-            "top":  hoverEvent.pageY + "px"
-          })
           .append(player_text)
           .appendTo(document.body);
+
+          $("#player-label").draggable();
 
           label = document.getElementById('player-label');
           label.addEventListener("click", function(){
