@@ -48,7 +48,6 @@ $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
     $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
       $('.dropdown-submenu .show').removeClass("show");
     });
-  
     return false;
 });
 
@@ -129,6 +128,7 @@ function key_stats(s,key,chart) {
   });
 }
 
+// This is the variable that will become the Chart. It needs to be a global variable so old ones can be deleted. 
 var chartDraw;
 
 function render_stlat(stlat,key) {
@@ -138,10 +138,8 @@ function render_stlat(stlat,key) {
   };
   var chart_opts;
 
-  console.log(stlat);
   switch (stlat) {
     case "abd":
-      //console.log(key)
       axis = zip(res["abundances"][key]);
       chart.x = axis[0];
       chart.y = axis[1];
@@ -153,7 +151,6 @@ function render_stlat(stlat,key) {
       }
 
       Object.keys(res["stocks"][key]).forEach(function(k) {
-        //console.log(res["stocks"][key]);
         axis = zip(res["stocks"][key][k]);
         data.labels = axis[0];
         data.datasets.push({
@@ -174,10 +171,8 @@ function render_stlat(stlat,key) {
           }
         }
       };
-
       break;
     default:
-      //console.log("hii");
       key_stats(stlat,key,chart)
   }
 
@@ -206,6 +201,7 @@ function render_stlat(stlat,key) {
   var ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // deletes the old chart so we don't flicker between all the previously opened charts
   if(chartDraw)
   {
     chartDraw.destroy();
@@ -225,6 +221,7 @@ panzoom(element, {
   boundsPadding: 0.6
 });
 
+// Add labels to the image map areas. 
 mapAreas = document.getElementById('marker-map').getElementsByTagName('area');
 let i;
 
@@ -239,8 +236,8 @@ for (i = 0; i < mapAreas.length; i++) {
     .append(document.createTextNode(marker.alt))
     .appendTo(document.body);
 
+    // Remove the labels when the mouse moves
     label = document.getElementById('team-label');
-    
     label.addEventListener("mouseleave", function(){
       $("#team-label").remove();
     });
