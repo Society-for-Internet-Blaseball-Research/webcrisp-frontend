@@ -292,3 +292,7 @@ $("area").on("mouseenter", function(hoverEvent){
     })
   });
 });
+
+$('body').click(function(){
+  if($('#player-label')){ $("#player-label").remove(); }
+})
