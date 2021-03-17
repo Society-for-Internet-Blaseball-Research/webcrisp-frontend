@@ -274,19 +274,19 @@ for (i = 0; i < mapAreas.length; i++) {
       .then(response => response.json())
       .then(json => {
         let all_players = "";
-        let player_text = json["fullName"] + " Player Roster:<br>" ;
         for(let j = 0; j < json["lineup"].length; j++){
           all_players += json["lineup"][j] + ',';
         }
         for(let j = 0; j < json["rotation"].length; j++){
           all_players += json["rotation"][j] + ',';
         }
-
+        let player_text = "<div class='player-list-header'>" + json["fullName"] + " Player Roster:</div><ul>" ;
+        
         fetch('https://cors-proxy.blaseball-reference.com/database/players?ids=' + all_players)
         .then(response => response.json())
         .then(json => {
           for(let k = 0; k < json.length; k++){
-            player_text += json[k]["name"] + '<br>';
+            player_text += '<li>' + json[k]["name"] + '</li>';
           }
           let player_list = $('<div id="player-label">')
             .append(player_text)

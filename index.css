@@ -37,9 +37,13 @@
 #player-label{
     left: 1vw;
     top: 8vh;
+    font-weight: normal;
     padding: 0.25em;
     position: absolute;
     background-color: white;
-    font-weight: bold;
     border: 0.25em solid black;
+}
+
+.player-list-header{
+    font-weight: bold;
 }
