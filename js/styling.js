@@ -253,15 +253,21 @@ panzoom(element, {
 
 
 // Add labels to the image map areas. 
-['ontouchstart','mouseenter'].forEach( evt => 
-  $("area").on(evt, function(hoverEvent){
+['mouseenter','touchstart'].forEach( evt => 
+  $("area").on(evt, function(interaction){
+    let x, y;
+    if(typeof interaction.changedTouches != "undefined"){ x = interaction.changedTouches[0].clientX; y = interaction.changedTouches[0].clientY; }
+    else{ x = interaction.pageX; y = interaction.pageY; }
+
     let label = $('<div id="team-label">')
     .css({
-      "left": hoverEvent.pageX + "px",
-      "top":  hoverEvent.pageY + "px"
+      "left": x + "px",
+      "top":  y + "px"
     })
     .append(document.createTextNode(this.alt))
     .appendTo(document.body);
+
+    console.log(x + ' ' + y)
 
     // Remove the labels when the mouse moves
     label = document.getElementById('team-label');
@@ -304,7 +310,7 @@ panzoom(element, {
 );
 
 // Removes labels / rosters when the screen is clicked or touched.
-['click','ontouchstart'].forEach( evt => 
+['click','touchstart'].forEach( evt => 
   $('body').on(evt, function(){
     if($('#player-label')){ $("#player-label").remove(); }
     if($('#team-label')){ $("#team-label").remove(); }
