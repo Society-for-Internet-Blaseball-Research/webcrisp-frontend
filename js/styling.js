@@ -64,7 +64,6 @@ $('#graphmodal').on('show.bs.modal', function () {
   });
 });
 
-
 var long_stlats = { // l o n g boys
   "abd": "Abundance indices for fishery",
   "catch": "Total catches for fishery",
@@ -234,9 +233,8 @@ function render_stlat(stlat,key) {
   chartDraw = new Chart(ctx, chart_opts);
 }
 
-/*
-var element = document.querySelector('#map-container')
-panzoom(element, {
+var zoom_element = document.querySelector('#map-container')
+let zoom_instance = panzoom(zoom_element, {
   beforeWheel: function(e) {
     // allow wheel-zoom only if shift key is down. Otherwise - ignore
     var shouldIgnore = !e.shiftKey;
@@ -247,10 +245,15 @@ panzoom(element, {
     var shouldIgnore = !e.altKey;
     return shouldIgnore;
   },
+  onTouch: function(e) {
+    return false; 
+  },
+  onDoubleClick: function(e) {
+    return false;
+  },
   bounds: true,
   boundsPadding: 0.6
 });
-*/
 
 // Add labels to the image map areas. 
 ['mouseenter','touchend'].forEach( evt => 
@@ -267,14 +270,12 @@ panzoom(element, {
     .append(document.createTextNode(this.alt))
     .appendTo(document.body);
 
-    console.log(x + ' ' + y)
+    console.log(x + ' ' + y);
 
     // Remove the labels when the mouse moves
-    /*
     $("#team-label").mouseleave(function(){
       $("#team-label").remove();
     });
-    */
     
     // Gives team info if the label's clicked/touched.
     let team_id = team_ids[this.id];
@@ -313,9 +314,11 @@ panzoom(element, {
 );
 
 // Removes labels / rosters when the screen is clicked or touched.
-['click'].forEach( evt => 
-  $('body').on(evt, function(){
-    if($('#player-label')){ $("#player-label").remove(); }
-    if($('#team-label')){ $("#team-label").remove(); }
-  })
-);
+$('body').on("click", function(){
+  if($('#player-label')){ $("#player-label").remove(); }
+})
+
+// stops panzoom from working when you're using a touch screen because things get really wonky with it.
+$('body').on("touchstart", function(){
+  zoom_instance.pause();
+})
