@@ -234,6 +234,7 @@ function render_stlat(stlat,key) {
   chartDraw = new Chart(ctx, chart_opts);
 }
 
+/*
 var element = document.querySelector('#map-container')
 panzoom(element, {
   beforeWheel: function(e) {
@@ -244,9 +245,10 @@ panzoom(element, {
   bounds: true,
   boundsPadding: 0.6
 });
+*/
 
 // Add labels to the image map areas. 
-['mouseenter','ontouchstart'].forEach( evt => 
+['ontouchstart','mouseenter'].forEach( evt => 
   $("area").on(evt, function(hoverEvent){
     let label = $('<div id="team-label">')
     .css({
