@@ -1,23 +1,53 @@
+window.onload = function () {
+  // Scales the image map with the map.svg file
+  var ImageMap = function (map, img) {
+    var n,
+      areas = $('area'),
+      len = areas.length,
+      coords = [],
+      previousWidth = 460.8;
+    for (n = 0; n < len; n++) {
+      coords[n] = areas[n].coords.split(',');
+    }
+    this.resize = function () {
+      var n, m, clen,
+        x = img.offsetWidth / previousWidth;
+      for (n = 0; n < len; n++) {
+        clen = coords[n].length;
+        for (m = 0; m < clen; m++) {
+          coords[n][m] *= x;
+        }
+        areas[n].coords = coords[n].join(',');
+      }
+      previousWidth = $('#map').width();
+      return true;
+      };
+      window.onresize = this.resize;
+    },
+  imageMap = new ImageMap(document.getElementById('marker-map'), document.getElementById('map'));
+  imageMap.resize();
+  return;
+}
+
 function zip(arrays) {
   return arrays[0].map(function(_,i){
       return arrays.map(function(array){return array[i]})
   });
 }
 
-
 $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
-    if (!$(this).next().hasClass('show')) {
+    if (!$(this).next().hasClass('show')) { // idk
       $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
     }
+
+    // When you click a drop down, it opens up it's associated menu.
     var $subMenu = $(this).next(".dropdown-menu");
     $subMenu.toggleClass('show');
   
-  
+    // But only show the next menu, not all menus after it.
     $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
       $('.dropdown-submenu .show').removeClass("show");
     });
-  
-  
     return false;
 });
 
@@ -34,7 +64,6 @@ $('#graphmodal').on('show.bs.modal', function () {
   });
 });
 
-
 var long_stlats = { // l o n g boys
   "abd": "Abundance indices for fishery",
   "catch": "Total catches for fishery",
@@ -48,6 +77,30 @@ var long_stlats = { // l o n g boys
   "stocks": "Total mortalities for stock & fishery"
 }
 
+let team_ids = {
+  "sunbeams":     "f02aeae2-5e6a-4098-9842-02d2273f25c7",
+  "tacos":        "878c1bf6-0d21-4659-bfee-916c8314d69c",
+  "lovers":       "b72f3061-f573-40d7-832a-5ad475bd7909",
+  "garages":      "105bc3ff-1320-4e37-8ef0-8d595cb95dd0",
+  "magic":        "7966eb04-efcc-499b-8f03-d13916330531",
+  "jazz":         "a37f9158-7f82-46bc-908c-c9e2dda7c33b",
+  "mints":        "adc5b394-8f76-416d-9ce9-813706877b84",
+  "spies":        "9debc64f-74b7-4ae1-a4d6-fce0144b6ea5",
+  "stakes":       "b024e975-1c4a-4575-8936-a3754a08806a",
+  "wild":         "57ec08cc-0411-4643-b304-0e80dbc15ac7",
+  "dale":         "b63be8c2-576a-4d6e-8daf-814f8bcea96f",
+  "shoe":         "bfd38797-8404-4b38-8b82-341da28b1f83",
+  "pies":         "23e4cbc1-e9cd-47fa-a35b-bfa06f726cb7",
+  "crabs":        "8d87c468-699a-47a8-b40d-cfb73a5660ad",
+  "millennials":  "36569151-a2fb-43c1-9df7-2df512424c82",
+  "flowers":      "3f8bbb15-61c0-4e3f-8e4a-907a5fb1565e",
+  "moist":        "eb67ae5e-c4bf-46ca-bbbc-425cd34182ff",
+  "tigers":       "747b8e4a-7e50-4638-a973-ea7950a3e739",
+  "firefighters": "ca3f1c8c-c025-4d8e-8eef-5be6accbeb16",
+  "lift":         "c73b705c-40ad-4633-a6ed-d357ee2e2bcf",
+  "fridays":      "979aee4a-6d80-4863-bf1c-ee1a78e06024"
+}
+
 var fishery_stats = ['abd','catch','lim','sim','tim'];
 var stlat = "";
 
@@ -56,8 +109,11 @@ $(".graph-toggle").on('click',function(ev){
 
   // populate select
   $("#graphselect").empty();
+  
   //console.log(Object.keys(sim_payload));
+
   if (fishery_stats.indexOf(stlat) >= 0) {
+    // This sets up the in-graph drop down menu.
     sim_payload["fisheries"].forEach(function (f) {
       $("#graphselect").append("<option data-id=\"" + f["name"] + "\">"+f["name"]+"</option>");
     });
@@ -75,6 +131,7 @@ $(".graph-toggle").on('click',function(ev){
   $("#graphmodal").modal({backdrop:false,focus:false});
  // console.log($(ev.target).text());
   console.log("h-hewwo?");
+
   ev.stopPropagation();
   ev.stopImmediatePropagation();
 });
@@ -94,6 +151,9 @@ function key_stats(s,key,chart) {
   });
 }
 
+// This is the variable that will become the Chart. It needs to be a global variable so old ones can be deleted. 
+var chartDraw;
+
 function render_stlat(stlat,key) {
   var chart = {
     x: [],
@@ -101,10 +161,8 @@ function render_stlat(stlat,key) {
   };
   var chart_opts;
 
-  console.log(stlat);
   switch (stlat) {
     case "abd":
-      //console.log(key)
       axis = zip(res["abundances"][key]);
       chart.x = axis[0];
       chart.y = axis[1];
@@ -116,7 +174,6 @@ function render_stlat(stlat,key) {
       }
 
       Object.keys(res["stocks"][key]).forEach(function(k) {
-        //console.log(res["stocks"][key]);
         axis = zip(res["stocks"][key][k]);
         data.labels = axis[0];
         data.datasets.push({
@@ -137,10 +194,8 @@ function render_stlat(stlat,key) {
           }
         }
       };
-
       break;
     default:
-      //console.log("hii");
       key_stats(stlat,key,chart)
   }
 
@@ -168,12 +223,102 @@ function render_stlat(stlat,key) {
   var canvas = document.getElementById('salmon_graph');
   var ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var chart = new Chart(ctx, chart_opts);
+
+  // deletes the old chart so we don't flicker between all the previously opened charts
+  if(chartDraw)
+  {
+    chartDraw.destroy();
+  }
+
+  chartDraw = new Chart(ctx, chart_opts);
 }
 
-
-var element = document.querySelector('#map')
-panzoom(element, {
+var zoom_element = document.querySelector('#map-container')
+let zoom_instance = panzoom(zoom_element, {
+  beforeWheel: function(e) {
+    // allow wheel-zoom only if shift key is down. Otherwise - ignore
+    var shouldIgnore = !e.shiftKey;
+    return shouldIgnore;
+  },
+  beforeMouseDown: function(e){
+    // allow panning only if alt key is down. Otherwise - ignore
+    var shouldIgnore = !e.altKey;
+    return shouldIgnore;
+  },
+  onTouch: function(e) {
+    return false; 
+  },
+  onDoubleClick: function(e) {
+    return false;
+  },
   bounds: true,
   boundsPadding: 0.6
 });
+
+// Add labels to the image map areas. 
+['mouseenter','touchend'].forEach( evt => 
+  $("area").on(evt, function(interaction){
+    let x, y;
+    if(typeof interaction.changedTouches != "undefined"){ x = interaction.changedTouches[0].pageX; y = interaction.changedTouches[0].pageY; }
+    else{ x = interaction.pageX; y = interaction.pageY; }
+
+    let label = $('<div id="team-label">')
+    .css({
+      "left": x + "px",
+      "top":  y + "px"
+    })
+    .append(document.createTextNode(this.alt))
+    .appendTo(document.body);
+
+    console.log(x + ' ' + y);
+
+    // Remove the labels when the mouse moves
+    $("#team-label").mouseleave(function(){
+      $("#team-label").remove();
+    });
+    
+    // Gives team info if the label's clicked/touched.
+    let team_id = team_ids[this.id];
+    ['click','touchend'].forEach( evt =>
+      $("#team-label").on(evt, function(){
+        fetch('https://cors-proxy.blaseball-reference.com/database/team?id=' + team_id)
+        .then(response => response.json())
+        .then(json => {
+          let all_players = "";
+          for(let j = 0; j < json["lineup"].length; j++){
+            all_players += json["lineup"][j] + ',';
+          }
+          for(let j = 0; j < json["rotation"].length; j++){
+            all_players += json["rotation"][j] + ',';
+          }
+          let player_text = "<div class='player-list-header'>" + json["fullName"] + " Player Roster:</div><ul>" ;
+          
+          fetch('https://cors-proxy.blaseball-reference.com/database/players?ids=' + all_players)
+          .then(response => response.json())
+          .then(json => {
+            for(let k = 0; k < json.length; k++){
+              player_text += '<li>' + json[k]["name"] + '</li>';
+            }
+
+            let player_list = $('<div id="player-label">')
+              .append(player_text)
+              .appendTo(document.body);
+            $("#player-label").on(evt, function(){
+              $("#player-label").remove();
+            })
+          })
+        })
+      })
+    );
+  })
+);
+
+// Removes labels / rosters when the screen is clicked or touched.
+$('body').on("click", function(){
+  if($('#player-label')){ $("#player-label").remove(); }
+})
+
+// stops panzoom from working when you're using a touch screen because things get really wonky with it.
+$('body').on("touchstart", function(){
+  zoom_instance.pause();
+})

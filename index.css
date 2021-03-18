@@ -16,12 +16,34 @@
     margin-right: .1rem;
 }
 
-  
 #mainnav {
     margin-bottom: 0px;
 }
 
 #map {
     margin: 0px;
+    height: 100%;
 }
 
+#team-label{
+    padding: 0.25em;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    font-weight: bold;
+    border: 0.25em solid black;
+}
+
+#player-label{
+    left: 1vw;
+    top: 8vh;
+    font-weight: normal;
+    padding: 0.25em;
+    position: absolute;
+    background-color: white;
+    border: 0.25em solid black;
+}
+
+.player-list-header{
+    font-weight: bold;
+}
