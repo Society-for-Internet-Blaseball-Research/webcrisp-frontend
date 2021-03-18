@@ -234,7 +234,7 @@ function render_stlat(stlat,key) {
   chartDraw = new Chart(ctx, chart_opts);
 }
 
-/*
+
 var element = document.querySelector('#map-container')
 panzoom(element, {
   beforeWheel: function(e) {
@@ -242,10 +242,15 @@ panzoom(element, {
     var shouldIgnore = !e.shiftKey;
     return shouldIgnore;
   },
+  beforeMouseDown: function(e){
+    // allow panning only if alt key is down. Otherwise - ignore
+    var shouldIgnore = !e.altKey;
+    return shouldIgnore;
+  },
   bounds: true,
   boundsPadding: 0.6
 });
-*/
+
 
 // Add labels to the image map areas. 
 ['ontouchstart','mouseenter'].forEach( evt => 
@@ -264,7 +269,7 @@ panzoom(element, {
       $("#team-label").remove();
     });
     
-    // Gives team info if the label's clicked.
+    // Gives team info if the label's clicked/touched.
     let team_id = team_ids[this.id];
     if(evt == 'mouseenter'){ evt = "click"; }
     $("#team-label").on(evt, function(){
