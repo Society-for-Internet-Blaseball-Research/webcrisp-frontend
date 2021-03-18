@@ -234,7 +234,7 @@ function render_stlat(stlat,key) {
   chartDraw = new Chart(ctx, chart_opts);
 }
 
-
+/*
 var element = document.querySelector('#map-container')
 panzoom(element, {
   beforeWheel: function(e) {
@@ -250,13 +250,13 @@ panzoom(element, {
   bounds: true,
   boundsPadding: 0.6
 });
-
+*/
 
 // Add labels to the image map areas. 
-['mouseenter','touchstart'].forEach( evt => 
+['mouseenter','touchend'].forEach( evt => 
   $("area").on(evt, function(interaction){
     let x, y;
-    if(typeof interaction.changedTouches != "undefined"){ x = interaction.changedTouches[0].clientX; y = interaction.changedTouches[0].clientY; }
+    if(typeof interaction.changedTouches != "undefined"){ x = interaction.changedTouches[0].pageX; y = interaction.changedTouches[0].pageY; }
     else{ x = interaction.pageX; y = interaction.pageY; }
 
     let label = $('<div id="team-label">')
@@ -270,47 +270,50 @@ panzoom(element, {
     console.log(x + ' ' + y)
 
     // Remove the labels when the mouse moves
-    label = document.getElementById('team-label');
+    /*
     $("#team-label").mouseleave(function(){
       $("#team-label").remove();
     });
+    */
     
     // Gives team info if the label's clicked/touched.
     let team_id = team_ids[this.id];
-    if(evt == 'mouseenter'){ evt = "click"; }
-    $("#team-label").on(evt, function(){
-      fetch('https://cors-proxy.blaseball-reference.com/database/team?id=' + team_id)
-      .then(response => response.json())
-      .then(json => {
-        let all_players = "";
-        for(let j = 0; j < json["lineup"].length; j++){
-          all_players += json["lineup"][j] + ',';
-        }
-        for(let j = 0; j < json["rotation"].length; j++){
-          all_players += json["rotation"][j] + ',';
-        }
-        let player_text = "<div class='player-list-header'>" + json["fullName"] + " Player Roster:</div><ul>" ;
-        
-        fetch('https://cors-proxy.blaseball-reference.com/database/players?ids=' + all_players)
+    ['click','touchend'].forEach( evt =>
+      $("#team-label").on(evt, function(){
+        fetch('https://cors-proxy.blaseball-reference.com/database/team?id=' + team_id)
         .then(response => response.json())
         .then(json => {
-          for(let k = 0; k < json.length; k++){
-            player_text += '<li>' + json[k]["name"] + '</li>';
+          let all_players = "";
+          for(let j = 0; j < json["lineup"].length; j++){
+            all_players += json["lineup"][j] + ',';
           }
-          let player_list = $('<div id="player-label">')
-            .append(player_text)
-            .appendTo(document.body);
+          for(let j = 0; j < json["rotation"].length; j++){
+            all_players += json["rotation"][j] + ',';
+          }
+          let player_text = "<div class='player-list-header'>" + json["fullName"] + " Player Roster:</div><ul>" ;
+          
+          fetch('https://cors-proxy.blaseball-reference.com/database/players?ids=' + all_players)
+          .then(response => response.json())
+          .then(json => {
+            for(let k = 0; k < json.length; k++){
+              player_text += '<li>' + json[k]["name"] + '</li>';
+            }
+
+            let player_list = $('<div id="player-label">')
+              .append(player_text)
+              .appendTo(document.body);
             $("#player-label").on(evt, function(){
               $("#player-label").remove();
             })
+          })
         })
       })
-    });
+    );
   })
 );
 
 // Removes labels / rosters when the screen is clicked or touched.
-['click','touchstart'].forEach( evt => 
+['click'].forEach( evt => 
   $('body').on(evt, function(){
     if($('#player-label')){ $("#player-label").remove(); }
     if($('#team-label')){ $("#team-label").remove(); }
